@@ -1,9 +1,10 @@
 #!/bin/bash
 
-helm_chart_location=/home/vagrant/dev/soapUI-docker/kubernetes_integration_example/helm-k8s-integration
-helm_repo=https://github.com/scoulomb/helm-registry.git
+helm_chart_location=/home/vagrant/dev/soapUI-docker/kubernetes_integration_example/helm-k8s-integration \
+helm_repo=helm-registry/helm-registry.github.io
 helm_project='soapui'
-url='soapui'
+url=helm-registry.github.io \
+token=1423a52e3fb0343f4f4f45157d9328d9065f6a72
 
 function doc {
     echo "usage: ./deliver_helm.sh [-h] --chart <chart-path> --repo <helm-repo> --project <helm-project-name>"
@@ -15,7 +16,7 @@ function doc {
 	echo "   -u, --url           URL to the helm registry"
 	echo "   -t, -token          Github token for registry access"
 	echo ""
-  echo "Example: ./deliver_helm.sh -c /home/vagrant/dev/soapUI-docker/kubernetes_integration_example/helm-k8s-integration -r scoulomb/helm-registry -p soapui -u scoulomb.github.io/helm-registry -t 1423a52e3fb0343f4f4f45157d9328d9065f6a72"
+  echo "Example: See readme at https://github.com/scoulomb/github-page-helm-deployer"
 }
 
 # Credits for args parsing: http://linuxcommand.org/lc3_wss0120.php
