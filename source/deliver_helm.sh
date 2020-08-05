@@ -7,7 +7,7 @@ url=helm-registry.github.io \
 token=1423a52e3fb0343f4f4f45157d9328d9065f6a72
 
 function doc {
-    echo "usage: ./deliver_helm.sh [-h] --chart <chart-path> --repo <helm-repo> --project <helm-project-name>"
+  echo "usage: ./deliver_helm.sh [-h] --chart <chart-path> --repo <helm-repo> --project <helm-project-name> --url <helm-registry-public-url> --token <github-token>"
 	echo -e "A script to push helm chart to github helm chart repository. As a prerequisite crate a github repo with readme from the UI and activate github page (master, /root). Check committer name."
 	echo "Arguments"
 	echo "   -c, --chart         Path to the helm chart to be delivered"
