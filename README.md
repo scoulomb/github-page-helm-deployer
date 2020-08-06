@@ -233,6 +233,10 @@ https://hub.docker.com/repository/docker/scoulomb/github-page-helm-deployer
 
 Those images are used in user-guide which can be seen as the next section of this guide.
 
+## Links
+
+-  https://medium.com/containerum/how-to-make-and-share-your-own-helm-package-50ae40f6c221
+
 <!--
 [here](README.md#usage-of-helm-registry-once-helm-deliverables-are-pushed)
 TODO Optional: We could change the repo index (--url), at delivery time I would expect it to work too (not tried-stop)

@@ -365,10 +365,3 @@ They are accessible with
 <!--
 TODO Optional: try Gandi glue record, mail redirection OK
 -->
-
-<!--
-repo link:
-Seed: https://github.com/scoulomb/soapui-docker/tree/master/kubernetes_integration_example#deliver-a-helm-package-in-helmhub
-=> github-page=helm-deployer
-=>mydns and my k8s 
--->
