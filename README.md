@@ -138,6 +138,28 @@ helm install test-helm-k8s-integration soapui/helm-k8s-integration  --set args.s
 watch kubectl get cj
 ````
 
+<tested ok with 1.20; https://github.com/scoulomb/soapui-docker/commit/93485e15ed00b3e2783c74d43e56d13d4af51d81>
+
+We can also do cf explanation at the [beginning](#github-page-basics): 
+
+````shell script
+helm repo add soapui https://helm-registry.github.io/soapui (orga site, though it can be accessible as a project)
+````
+
+And since we define a CNAME for `helm.registry.coulombel.site` in [appendice github page and DNS](appendice-github-page-and-dns.md#consequences).
+We can do:
+
+````shell script
+helm repo add soapui https://helm.registry.coulombel.site/soapui 
+````
+
+Output is
+
+````shell script
+➤ helm repo add soapui https://helm.registry.coulombel.site/soapui                                                                                                         
+"soapui" has been added to your repositories
+````
+
 ## Dev guide
 
 

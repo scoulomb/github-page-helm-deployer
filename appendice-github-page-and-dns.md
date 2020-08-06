@@ -100,7 +100,7 @@ Address: 185.199.111.153
 ````
 
 
-## Configure an APEX
+### Configure an APEX
 
 [APEX doc](https://docs.github.com/en/github/working-with-github-pages/managing-a-custom-domain-for-your-github-pages-site#configuring-an-apex-domain).
 
@@ -108,7 +108,7 @@ This enables to define an entry like `coulombel.site` directly.
 
 Using 2 mutual exclusive ways:
 
-### Alias or ANAME:
+#### Alias or ANAME:
 
 Alias/ANAME is CNAME equivalent for APEX zone ([Source](https://support.dnsimple.com/articles/differences-between-a-cname-alias-url/)).
 
@@ -122,7 +122,7 @@ Flow is:
 - DNS server redirect to github IP (autho is Github) ->
 - Github uses CNAME file to determine which github page to serve (similar to vhost)
 
-### A records 
+#### A records 
 
 Flow is:
 - `coulombel.site` -> 
@@ -140,8 +140,12 @@ Thus DNS zone file has:
 @ 300 IN A 185.199.111.153
 ````
 
-And we activate github page with `scoulomb.github.io` DNS, this will create a CNAME file with that name.
+And we activate github page for both cases with `scoulomb.github.io` DNS, this will create a CNAME file with that name.
 Those IP are the same as `scoulomb.github.io` [nslookup result](#nslookup-github). 
+
+#### APEX and domain living together
+
+##### `www` case
 
 If we need `coulombel.site` and `www.coulombel.site`: 
 we need to configure subdomain for [`www`](#Configure-subdomain)). 
@@ -151,15 +155,17 @@ we need to configure subdomain for [`www`](#Configure-subdomain)).
 www 300 IN CNAME scoulomb.github.io.
 ````
 
-<details><summary>Test www</summary>
+<details><summary>Test with APEX record and `www` subdomain</summary>
 <p>
 
 For same reason as [here](#Use-google-DNS).
-I will use Ubuntu laptop, using ISP DNS (not google or corpo).
-But even better I will plug directly to authoritative DNS.
+I will use Ubuntu laptop, using ISP DNS (not google or enterprise).
+I will plug directly to authoritative DNS.
 BUT as this authoritative DNS is not recursive, I will not be able to access records outside of Gandi.
-[HERE]
 
+###### Step 1: determine Gandi Autho DNS
+
+````shell script
 sylvain@sylvain-hp:~$ nslookup -type=ns coulombel.site
 Server:		127.0.0.53
 Address:	127.0.0.53#53
@@ -178,18 +184,27 @@ Address:	8.8.8.8#53
 Non-authoritative answer:
 Name:	ns-252-a.gandi.net
 Address: 173.246.100.253
+````
 
+###### Step 2: Use Gandi DNS
+
+````shell script
 sylvain@sylvain-hp:~$ sudo sed -i 's/nameserver.*/nameserver 173.246.100.253/g' /etc/resolv.conf
 [sudo] password for sylvain: 
 sylvain@sylvain-hp:~$ cat /etc/resolv.conf | grep nameserver
 nameserver 173.246.100.253
+````
 
-Now from another machine I will configure DNS to have CNAME entry
+###### Step 3: Configure Gandi DNS to add wwww
 
+Now from another machine (with access to Github domain) I will configure Gandi DNS to have CNAME entry
 
-www 300 ....
+````shell script
+www 300 IN CNAME scoulomb.github.io.
+````
+###### Step 4: Test it
 
-
+````shell script
 sylvain@sylvain-hp:~$ nslookup www.coulombel.site
 Server:		173.246.100.253
 Address:	173.246.100.253#53
@@ -200,10 +215,15 @@ www.coulombel.site	canonical name = scoulomb.github.io.
 sylvain@sylvain-hp:~$ sudo systemd-resolve --flush-caches
 
 Firefox ==> www.coulombel.site WORKING
+````
+
+###### Step 5: remove it
 
 Then I will remove it
 
-sylvain@sylvain-hp:~$ ^C
+###### Step 6: Test removal
+
+````shell script
 sylvain@sylvain-hp:~$ nslookup www.coulombel.site
 Server:		173.246.100.253
 Address:	173.246.100.253#53
@@ -214,13 +234,54 @@ Address:	173.246.100.253#53
 sylvain@sylvain-hp:~$ sudo systemd-resolve --flush-caches
 
 Firefox ==> www.coulombel.site NOT WORKING
+````
 
-
+Note that I had to flush the cache as browser use OS cache, more details here:
+- https://www.commentcamarche.net/faq/13384-desactiver-le-cache-dns-de-mozilla-firefox
+- https://vitux.com/how-to-flush-the-dns-cache-on-ubuntu/
 
 </p>
 </details>
 
 This what is done here: https://gist.github.com/matt-bailey/bbbc181d5234c618e4dfe0642ad80297
+
+ <details><summary>GIST content</summary>
+ <p>
+ How to set up DNS records on gandi.net to use a custom domain on Github Pages
+> You would think it would be easy to find this information, but none of the Github or Gandi documentation is clear so I have recorded the required steps here.
+
+Create the following A records:
+
+```
+@ 1800 IN A 185.199.108.153
+@ 1800 IN A 185.199.109.153
+@ 1800 IN A 185.199.110.153
+@ 1800 IN A 185.199.111.153
+```
+
+Remove the Gandi parking page A record:
+
+```
+@ 10800 IN A 217.70.184.38
+```
+
+Create the following CNAME record:
+
+```
+www 10800 IN CNAME [github-username].github.io.
+```
+
+Remove the Gandi parking page CNAME record:
+
+```
+www 1800 IN CNAME webredir.vip.gandi.net.
+```
+
+Finally, in your Github repo create a file called `CNAME` which contains your Gandi domain name, e.g. `[my-domain].io`.
+ 
+ </p>
+ </details>
+ 
 
 Though DNS entries are good as using `8.8.8.8` DNS and `nslookup coulombel.site 8.8.8.8` shows correct IP 
 DNS entry in proxy could still point to old Gandi placeholder page (A record deleted) which may be be blocked in some machine.
@@ -228,6 +289,8 @@ DNS entry in proxy could still point to old Gandi placeholder page (A record del
 <!--
 see private
 -->
+
+##### Other than `www`
 
 Can I have both `coulombel.site` and subdomain `sylvain.coulombel.site` ? edit cname in repo to have 
 `coulombel.site` 
@@ -262,7 +325,7 @@ pdf.cv 10800 IN CNAME webredir.vip.gandi.net.
 
 <!-- Tested OK -->
 
-#### Solution ii
+### Solution ii
 
 Use solution `1a` in [README](./README.md#github-page-basics)
 We create `helm-registry.github.io` [repo](https://github.com/helm-registry/helm-registry.github.io) within organization `helm-registry`.
@@ -270,9 +333,11 @@ we can access to it via `helm-registry.github.io`.
      
 From there we can configure a [subdomain](#configure-subdomain)
 
-## Consequence 
+## Consequences 
 
-As a consequence final CNAME file
+As a consequence final CNAME file with solution ii. which is pure DNS.
+
+Retore to first back-up and add:
 
 ````shell script
 sylvain 300 IN CNAME scoulomb.github.io.
@@ -280,9 +345,15 @@ helm.registry 300 IN CNAME helm-registry.github.io.
 ````
 
 Where following repo exists and deploy github page where declare custom DNS in setting (thus CNAME file present in repo):
-- https://github.com/scoulomb/scoulomb.github.io
-- https://github.com/helm-registry/helm-registry.github.io
+- https://github.com/scoulomb/scoulomb.github.io (github custom domain is sylvain.coulombel.site)
+- https://github.com/helm-registry/helm-registry.github.io (github custom domain is helm.registry.coulombel.site)
+
+They are accessible with
+
+- sylvain.coulombel.site
+- helm.registry.coulombel.site
 
 
-or use https://admin.gandi.net/domain/69ba17f6-d4b2-11ea-8b42-00163e8fd4b8/coulombel.site/redirections
-+glue
+<!--
+Optional: try Gandi glue record
+-->
