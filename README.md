@@ -6,6 +6,8 @@ A helm deployer to github page helm repository.
 
 ### Prerequisite 1: Repo creation
 
+#### Github page basics
+
 We will turn github page feature to an helm registry. 
 This repo  will be our helm repository/artifactory. 
 
@@ -29,12 +31,17 @@ From: https://docs.github.com/en/github/working-with-github-pages/about-github-p
      It is a project page.
    
 Note repo `xxxx.github.io` is limited to 1 per orga/username.
+A user can be part/own of several organisations.
 We can also do actually a la project access for 1a and 2a:
 - `helm-registry.github.io/helm-registry.github.io`
 - `scoulomb.github.io/scoulomb.github.io`
 
+A user repo has the same behavior as orga repo when it comes to github page.
+
 As explained in [githb page and DNS](appendice-github-page-and-dns.md#what-about-registrycoulombelsite), I recomend option 1a,
 for better DNS definition.
+
+#### Operations
 
 In this repo we will perform a git init by adding at least a readme or html index.
 Note adding empty ready can be performed via the UI (create file) or at repo creation time.
