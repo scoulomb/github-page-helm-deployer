@@ -159,6 +159,64 @@ I will use Ubuntu laptop, using ISP DNS (not google or corpo).
 But even better I will plug directly to authoritative DNS.
 BUT as this authoritative DNS is not recursive, I will not be able to access records outside of Gandi.
 [HERE]
+
+sylvain@sylvain-hp:~$ nslookup -type=ns coulombel.site
+Server:		127.0.0.53
+Address:	127.0.0.53#53
+
+Non-authoritative answer:
+coulombel.site	nameserver = ns-72-b.gandi.net.
+coulombel.site	nameserver = ns-219-c.gandi.net.
+coulombel.site	nameserver = ns-252-a.gandi.net.
+
+Authoritative answers can be found from:
+
+sylvain@sylvain-hp:~$ nslookup -type=A ns-252-a.gandi.net 8.8.8.8
+Server:		8.8.8.8
+Address:	8.8.8.8#53
+
+Non-authoritative answer:
+Name:	ns-252-a.gandi.net
+Address: 173.246.100.253
+
+sylvain@sylvain-hp:~$ sudo sed -i 's/nameserver.*/nameserver 173.246.100.253/g' /etc/resolv.conf
+[sudo] password for sylvain: 
+sylvain@sylvain-hp:~$ cat /etc/resolv.conf | grep nameserver
+nameserver 173.246.100.253
+
+Now from another machine I will configure DNS to have CNAME entry
+
+
+www 300 ....
+
+
+sylvain@sylvain-hp:~$ nslookup www.coulombel.site
+Server:		173.246.100.253
+Address:	173.246.100.253#53
+
+www.coulombel.site	canonical name = scoulomb.github.io.
+** server can't find scoulomb.github.io: REFUSED
+
+sylvain@sylvain-hp:~$ sudo systemd-resolve --flush-caches
+
+Firefox ==> www.coulombel.site WORKING
+
+Then I will remove it
+
+sylvain@sylvain-hp:~$ ^C
+sylvain@sylvain-hp:~$ nslookup www.coulombel.site
+Server:		173.246.100.253
+Address:	173.246.100.253#53
+
+** server can't find www.coulombel.site: NXDOMAIN
+
+
+sylvain@sylvain-hp:~$ sudo systemd-resolve --flush-caches
+
+Firefox ==> www.coulombel.site NOT WORKING
+
+
+
 </p>
 </details>
 
