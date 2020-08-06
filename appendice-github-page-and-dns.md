@@ -354,10 +354,6 @@ They are accessible with
 - `helm.registry.coulombel.site`
 
 
-<!--
-Optional: try Gandi glue record
--->
-
 ## Links
 
 - https://medium.com/@hossainkhan/using-custom-domain-for-github-pages-86b303d3918a
@@ -365,3 +361,14 @@ Optional: try Gandi glue record
 - https://docs.github.com/en/github/working-with-github-pages/managing-a-custom-domain-for-your-github-pages-site
 - https://admin.gandi.net/domain/69ba17f6-d4b2-11ea-8b42-00163e8fd4b8/coulombel.site/records?view=text
 - https://gist.github.com/matt-bailey/bbbc181d5234c618e4dfe0642ad80297
+
+<!--
+TODO Optional: try Gandi glue record, mail redirection OK
+-->
+
+<!--
+repo link:
+Seed: https://github.com/scoulomb/soapui-docker/tree/master/kubernetes_integration_example#deliver-a-helm-package-in-helmhub
+=> github-page=helm-deployer
+=>mydns and my k8s 
+-->

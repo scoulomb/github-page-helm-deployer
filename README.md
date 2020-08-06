@@ -137,7 +137,7 @@ Dockerhub delivers released image used in docker-compose-dockerhub
 And delivered image of github-helm-page-deployer are built by dokcerhub from this project
 -->
 
-### Usage of helm registry once helm deliverables are pushed
+### Usage of helm registry once helm deliverable are pushed
 
 
 ````shell script
@@ -232,3 +232,8 @@ At each master branch merge, a new deployer is released on docker-hub here:
 https://hub.docker.com/repository/docker/scoulomb/github-page-helm-deployer
 
 Those images are used in user-guide which can be seen as the next section of this guide.
+
+<!--
+[here](README.md#usage-of-helm-registry-once-helm-deliverables-are-pushed)
+TODO Optional: We could change the repo index (--url), at delivery time I would expect it to work too (not tried-stop)
+-->
