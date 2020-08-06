@@ -1,6 +1,22 @@
-# README 
+# README: 
 
 A helm deployer to github page helm repository.
+
+Unlike DockerHub we do not have a cloud HelmHub accessible to everyone. Only this is available: 
+https://hub.helm.sh/charts
+
+But we can turn Github page to a private HelmHub as explained here:
+https://helm.sh/docs/topics/chart_repository/#github-pages-example
+
+Objective of this project is to deploy helm chart present in a github repository automatically to this helm chart repository using Travis CI/CD.
+An example is given [in this readme here](#CI-CD-pipeline-with-travis). 
+ 
+Note the Helm repository using Github page could be replaced by a Jfrog artifactory.
+
+<!--
+Also if we do not want a separate registry we could tar the helm archive in the project.
+Tar sounds mandatory.
+--> 
 
 ## User guide 
 
@@ -102,7 +118,7 @@ docker-compose -f docker-compose-delivered.yaml up
 TOKEN is an environment taken by compose file. It is useful for CI/CD pipeline integration.
 
 
-### CI/CD pipeline with travis and credenitals as env var 
+### CI CD pipeline with travis 
 
 You may want to deliver a new helmchart in helmhub at each delivery of your code.
 This is possible via this image and modifying previous docker-compose.

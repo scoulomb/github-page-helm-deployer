@@ -350,10 +350,18 @@ Where following repo exists and deploy github page where declare custom DNS in s
 
 They are accessible with
 
-- sylvain.coulombel.site
-- helm.registry.coulombel.site
+- `sylvain.coulombel.site`
+- `helm.registry.coulombel.site`
 
 
 <!--
 Optional: try Gandi glue record
 -->
+
+## Links
+
+- https://medium.com/@hossainkhan/using-custom-domain-for-github-pages-86b303d3918a
+- https://github.com/scoulomb/scoulomb.github.io/settings
+- https://docs.github.com/en/github/working-with-github-pages/managing-a-custom-domain-for-your-github-pages-site
+- https://admin.gandi.net/domain/69ba17f6-d4b2-11ea-8b42-00163e8fd4b8/coulombel.site/records?view=text
+- https://gist.github.com/matt-bailey/bbbc181d5234c618e4dfe0642ad80297
