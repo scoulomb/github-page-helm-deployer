@@ -1,0 +1,13 @@
+version: "3.6"
+services:
+  github-page-helm-deployer:
+    image: scoulomb/github-page-helm-deployer
+    command: ["-c", "/tmp/helm-chart",
+              "-r", "helm-registry/helm-registry.github.io",
+              "-p",  "soapui",
+              "-u", "helm-registry.github.io",
+              "-t",  "${TOKEN}"]
+    volumes:
+      # This folder will contain helm chart to push
+      - /home/vagrant/dev/soapUI-docker/kubernetes_integration_example/helm-k8s-integration:/tmp/helm-chart
+
