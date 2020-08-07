@@ -282,12 +282,13 @@ Finally, in your Github repo create a file called `CNAME` which contains your Ga
  </p>
  </details>
  
+###### Blocking
 
 Though DNS entries are good as using `8.8.8.8` DNS and `nslookup coulombel.site 8.8.8.8` shows correct IP 
 DNS entry in proxy could still point to old Gandi placeholder page (A record deleted) which may be be blocked in some machine.
 
 <!--
-see private
+see private: Configure an APEX  (like coulombel.site directly) - BLOCK
 -->
 
 ##### Other than `www`

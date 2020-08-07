@@ -54,7 +54,7 @@ We can also do actually a la project access for 1a and 2a:
 
 A user repo has the same behavior as orga repo when it comes to github page.
 
-As explained in [githb page and DNS](appendice-github-page-and-dns.md#what-about-registrycoulombelsite), I recomend option 1a,
+As explained in [githb page and DNS](appendix-github-page-and-dns.md#what-about-registrycoulombelsite), I recomend option 1a,
 for better DNS definition.
 
 #### Operations
@@ -154,7 +154,9 @@ helm install test-helm-k8s-integration soapui/helm-k8s-integration  --set args.s
 watch kubectl get cj
 ````
 
-<tested ok with 1.20; https://github.com/scoulomb/soapui-docker/commit/93485e15ed00b3e2783c74d43e56d13d4af51d81>
+<!--
+tested ok with 1.20; https://github.com/scoulomb/soapui-docker/commit/93485e15ed00b3e2783c74d43e56d13d4af51d81
+-->
 
 We can also do cf explanation at the [beginning](#github-page-basics): 
 
@@ -162,7 +164,7 @@ We can also do cf explanation at the [beginning](#github-page-basics):
 helm repo add soapui https://helm-registry.github.io/soapui (orga site, though it can be accessible as a project)
 ````
 
-And since we define a CNAME for `helm.registry.coulombel.site` in [appendice github page and DNS](appendice-github-page-and-dns.md#consequences).
+And since we define a CNAME for `helm.registry.coulombel.site` in [appendix github page and DNS](appendix-github-page-and-dns.md#consequences).
 We can do:
 
 ````shell script
@@ -175,6 +177,21 @@ Output is
 ➤ helm repo add soapui https://helm.registry.coulombel.site/soapui                                                                                                         
 "soapui" has been added to your repositories
 ````
+
+However some network may block the `helm.registry.coulombel.site` or `helm-registry.github.io` (as it redirects to `helm.registry.coulombel.site` due to custom DNS of github page).
+So `helm repo add` is working (`index.yaml) but `helm install` is not able to fetch the helm package as `tar.gz` could be blocked from coulombel.site.
+
+Otherwise it is working perfectly fine, when allowed.
+But for this reason I decided to disable custom DNS:
+https://github.com/helm-registry/helm-registry.github.io/settings here: "registry.coulombel.site".
+And it will break the [resolution flow](appendix-github-page-and-dns.md#Resolution-flow).
+
+<!--
+See details on private (DNS registry tarball blocking)
+there as a forwarder but not pointing to orga registry, no conflict OK
+A web forwarder to could make it work (not tested) instead of DNS
+-->
+
 
 ## Dev guide
 
