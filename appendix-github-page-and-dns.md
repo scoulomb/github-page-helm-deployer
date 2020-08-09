@@ -99,6 +99,53 @@ Address: 185.199.111.153
 
 ````
 
+Note also A resolution in A request:
+
+<!-- Add to show resolution is made in nslookup, as shown in DNS checker APP, broken link but nslookup is A and then AAAA if no specified, we can not give the 2 types otherwise with -t STOP -->
+
+````shell script
+sylvain@sylvain-hp:~$ nslookup -type=A sylvain.coulombel.site
+Server:		127.0.0.53
+Address:	127.0.0.53#53
+
+Non-authoritative answer:
+sylvain.coulombel.site	canonical name = scoulomb.github.io.
+Name:	scoulomb.github.io
+Address: 185.199.109.153
+Name:	scoulomb.github.io
+Address: 185.199.110.153
+Name:	scoulomb.github.io
+Address: 185.199.108.153
+Name:	scoulomb.github.io
+Address: 185.199.111.153
+
+sylvain@sylvain-hp:~$ nslookup -type=CNAME sylvain.coulombel.site
+Server:		127.0.0.53
+Address:	127.0.0.53#53
+
+Non-authoritative answer:
+sylvain.coulombel.site	canonical name = scoulomb.github.io.
+
+Authoritative answers can be found from:
+
+# equivalent of A, cf. https://github.com/scoulomb/myDNS/blob/master/1-basic-bind-lxa/p2-3-DNS-querying.md#run-the-nslookup-command
+sylvain@sylvain-hp:~$ nslookup sylvain.coulombel.site
+Server:		127.0.0.53
+Address:	127.0.0.53#53
+
+Non-authoritative answer:
+sylvain.coulombel.site	canonical name = scoulomb.github.io.
+Name:	scoulomb.github.io
+Address: 185.199.109.153
+Name:	scoulomb.github.io
+Address: 185.199.110.153
+Name:	scoulomb.github.io
+Address: 185.199.108.153
+Name:	scoulomb.github.io
+Address: 185.199.111.153
+
+````
+
 
 ### Configure an APEX
 
