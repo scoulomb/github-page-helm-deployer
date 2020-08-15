@@ -73,9 +73,28 @@ DNS resolution flow is:
 - redirect to `scoulomb.github.io` ->
 - `DNS server` (autho is Github) ->
 - redirect to github IP ->
-- github uses CNAME file to determine which github page to serve (similar to vhost)
+- github uses CNAME file to determine which github page to serve (similar to vhost, OpenShift route, K8s Ingress controller)
 
 (note that when using directly scoulomb.github.io CNAME file is not needed, as already known from Github)
+
+#### Mutildomain
+
+Can I have `sylvain.coulombel.site` and `coulombel.it`, 2 CNAME to `scoulomb.github.io`?
+
+We can define 2 CNAME but vhost resoltution at gtihub will not work.
+So that we can not use 2 CNAMES.
+
+Solution is also here to use web redirection from Gandi:
+`coulombel.it`  to point to `sylvain.coulombel.site`.
+
+However not it does not work in combination with `sylvain.coulombel.it` to `sylvain.coulombel.site`.
+
+<!--
+
+Not retested the however part 
+
+--> 
+
 
 #### nslookup github
 
@@ -401,7 +420,6 @@ They are accessible with
 - `sylvain.coulombel.site`
 - `helm.registry.coulombel.site`
 
-
 ## Links
 
 - https://medium.com/@hossainkhan/using-custom-domain-for-github-pages-86b303d3918a
@@ -412,4 +430,47 @@ They are accessible with
 
 <!--
 TODO Optional: try Gandi glue record, mail redirection OK
+-->
+
+
+## Similarities with OpenShift route and Ingress
+
+Reminder k8s:
+- https://github.com/scoulomb/myk8s/blob/master/Services/service_deep_dive.md
+- https://github.com/scoulomb/myk8s/blob/master/Services/k8s_f5_integration.md
+
+1. Assume we have a query 
+    ````shell script
+    GET /index.html HTTP/1.1
+     
+    Host  customer-facing-page.coulombel.it
+    Empty body
+    ````
+
+2. Then we have a CNAME entry :
+    ````shell script
+    customer-facing-page.coulombel.it. IN CNAME scoulomb-k8snodes.aws.net.
+    ````
+3. Then we have a wildcard HOST record rule which is resolving
+
+    ````shell script
+    *.scoulomb-k8snodes.aws.net. IN A <ipv4 of k8s node>
+    ````
+    Where we target one node or DNS RR, or with a load balancer in front instead of targetting directly k8s nodes.
+    
+    So that
+    ````shell script
+    customer-facing-page.coulombel.it. resolves to <ipv4 of OpenShift node>
+    ````
+    
+4.  Then the OpenShift router is directing to the correct service using Host header (virtual hosting mechanism)
+
+5. Service redirect to the correct pod
+
+In step 2 we could target directly what the wildcard is targetting with a A
+But using a CNAME is convenient for flexibility.
+
+<!--
+OS route deep dive
+Answered my question
 -->
