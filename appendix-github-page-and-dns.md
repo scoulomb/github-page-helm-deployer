@@ -79,22 +79,71 @@ DNS resolution flow is:
 
 #### Mutildomain
 
-Can I have `sylvain.coulombel.site` and `coulombel.it`, 2 CNAME to `scoulomb.github.io`?
+Can I have `sylvain.coulombel.site` and `coulombel.it`,
+2 CNAME to `scoulomb.github.io`?
 
-We can define 2 CNAME but vhost resoltution at gtihub will not work.
+We can define 2 CNAME but vhost resolution at github will not work.
 So that we can not use 2 CNAMES.
 
 Solution is also here to use web redirection from Gandi:
-`coulombel.it`  to point to `sylvain.coulombel.site`.
+For instance:
+````shell script
+(1) http://coulombel.it	PERMANENT https://sylvain.coulombel.site		
+(2) http://sylvain.coulombel.it	PERMANENT https://scoulomb.github.io
+````
 
-However not it does not work in combination with `sylvain.coulombel.it` to `sylvain.coulombel.site`.
+When we use  `https://sylvain.coulombel.site`, we can use `https://scoulomb.github.io` and vice versa.
+
+Make a test with Gandi live DNS -> Both are working
+
+If remove those 2 generated records (and target from another DNS recursive (phone)) to not have cache:
+
+````shell script
+@ 10800 IN A 217.70.184.38
+www 10800 IN CNAME webredir.vip.gandi.net.
+````
+
+- coulombel.it => working
+- sylvain.coulombel.it => not working
+
+I have some trouble to understand why and the link with `www` record.
+
+Note that
+
+````shell script
+[vagrant@archlinux myDNS]$ nslookup -type=ptr 217.70.184.38
+Server:         10.0.2.3
+Address:        10.0.2.3#53
+
+Non-authoritative answer:
+38.184.70.217.in-addr.arpa      name = webredir.vip.gandi.net.
+
+Authoritative answers can be found from:
+````
 
 <!--
+STOP THERE do not go further, : retry after test of route 53 and reproduced why (2) was not working
+-->
 
-Not retested the however part 
+Setting back the 2 records and testing with another DNS (another laptop)
+It is failing 
 
---> 
+Adding below record,
+Then for cache issue as "another" laptop is Ubuntu we can switch  in `/etc/resolv.conf` to OpenDNS, and flush Chrome cache (`chrome://net-internal/#dns`).
 
+````shell script
+sylvain	CNAME	1800	webredir.vip.gandi.net.
+````
+It is working.
+I am more confident with this config.
+
+If using an external DNS it is possible to use the redirection but we need to define records in delegated DNS.
+
+This is explained here: https://github.com/scoulomb/myDNS/blob/master/2-advanced-bind/5-real-world-application/2-modify-tld-ns-record.md#About-web-forwarding
+
+External DNS config is the same as our final results here and makes more sense.
+
+We explain here why we had to change DNS : https://github.com/scoulomb/myDNS/blob/master/2-advanced-bind/5-real-world-application/3-dns-propagation-effect.md
 
 #### nslookup github
 
