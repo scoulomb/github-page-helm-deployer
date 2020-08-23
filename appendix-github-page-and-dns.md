@@ -41,23 +41,27 @@ It can not be
 We defined in Gandi DNS zone:
 
 ````shell script
+# coulombel.site zone file
 sylvain 300 IN CNAME scoulomb.github.io.
 ````
 
-And we activate github page with `scoulomb.github.io` DNS, this will create a CNAME file with that name.
+And we activate github page with `sylvain.coulombel.site` custom domain, this will create a CNAME file with that name.
 
 #### Point importance
 
 Note the importance of the point, otherwise we would define
 `scoulomb.github.io.coulombel.site.`.
 
-#### Use google DNS
+#### DNS propagation effect 
 
 We also changed windows DNS to point to google DNS recursive `8.8.8.8` to access the record.
 Reason behind is that my current recursive DNS server has already requested this entry and the TTL was high.
+More details are given in this [page](https://github.com/scoulomb/myDNS/blob/master/2-advanced-bind/5-real-world-application/3-dns-propagation-effect.md).
 
 Here is the procedure to change the recursive DNS server from Google:
 https://developers.google.com/speed/public-dns/docs/using
+
+To set it back apply the reverse and connect/disconnet from network (be careful with update and cache).
 
 #### Results
 
@@ -69,7 +73,7 @@ Note same apply for `https://sylvain.coulombel.site/helm-registry/` and `https:/
 
 DNS resolution flow is: 
 - `sylvain.coulombel.site` ->
--`DNS server` (autho is Gandi)` ->
+-`DNS server` (autho is Gandi) ->
 - redirect to `scoulomb.github.io` ->
 - `DNS server` (autho is Github) ->
 - redirect to github IP ->
@@ -80,12 +84,12 @@ DNS resolution flow is:
 #### Mutildomain
 
 Can I have `sylvain.coulombel.site` and `coulombel.it`,
-2 CNAME to `scoulomb.github.io`?
+2 CNAMEs to `scoulomb.github.io`?
 
 We can define 2 CNAME but vhost resolution at github will not work.
 So that we can not use 2 CNAMES.
 
-Solution is also here to use web redirection from Gandi:
+Solution is also here to use web redirection from Gandi in `it` domain:
 For instance:
 ````shell script
 (1) http://coulombel.it	PERMANENT https://sylvain.coulombel.site		
@@ -93,20 +97,28 @@ For instance:
 ````
 
 When we use  `https://sylvain.coulombel.site`, we can use `https://scoulomb.github.io` and vice versa.
+As long as in zone `coulombel.site` we have 
+
+````shell script
+# coulombel.site zone file
+sylvain	CNAME	300	scoulomb.github.io.
+````
 
 Make a test with Gandi live DNS -> Both are working
+Note that CNAME pointing to another CNAME does not solve the issue:
+
+````shell script
+# coulombel.it zone file
+lol	CNAME	300	sylvain.coulombel.site.
+````
+Leads also to `404 - There isn't a GitHub Pages site here.`
 
 If remove those 2 generated records (and target from another DNS recursive (phone)) to not have cache:
 
 ````shell script
 @ 10800 IN A 217.70.184.38
-www 10800 IN CNAME webredir.vip.gandi.net.
+sylvain	CNAME	1800	webredir.vip.gandi.net.
 ````
-
-- coulombel.it => working
-- sylvain.coulombel.it => not working
-
-I have some trouble to understand why and the link with `www` record.
 
 Note that
 
@@ -121,29 +133,15 @@ Non-authoritative answer:
 Authoritative answers can be found from:
 ````
 
-<!--
-STOP THERE do not go further, : retry after test of route 53 and reproduced why (2) was not working
--->
+<!-- I believed www as generated but actually not confirm it is this behavior when did https://github.com/scoulomb/dns-config -->
 
-Setting back the 2 records and testing with another DNS (another laptop)
-It is failing 
+If using an external DNS (for it domain) rather than Gandi Live DNS it is still possible to use Gandi redirection but we need to define records in delegated DNS.
 
-Adding below record,
-Then for cache issue as "another" laptop is Ubuntu we can switch  in `/etc/resolv.conf` to OpenDNS, and flush Chrome cache (`chrome://net-internal/#dns`).
-
-````shell script
-sylvain	CNAME	1800	webredir.vip.gandi.net.
-````
-It is working.
-I am more confident with this config.
-
-If using an external DNS it is possible to use the redirection but we need to define records in delegated DNS.
-
-This is explained here: https://github.com/scoulomb/myDNS/blob/master/2-advanced-bind/5-real-world-application/2-modify-tld-ns-record.md#About-web-forwarding
+This is explained here: https://github.com/scoulomb/myDNS/blob/master/2-advanced-bind/5-real-own-dns-application/2-modify-tld-ns-record.md#About-web-forwarding
 
 External DNS config is the same as our final results here and makes more sense.
 
-We explain here why we had to change DNS : https://github.com/scoulomb/myDNS/blob/master/2-advanced-bind/5-real-world-application/3-dns-propagation-effect.md
+We had to chane DNS for same reason as section [above](#DNS-propagation-effect)
 
 #### nslookup github
 
@@ -248,7 +246,7 @@ Flow is:
 Thus DNS zone file has:
 
 ````shell script
-# remove gandi parking page A record
+; remove gandi parking page A record
 @ 300 IN A 185.199.108.153
 @ 300 IN A 185.199.109.153
 @ 300 IN A 185.199.110.153
@@ -266,14 +264,14 @@ If we need `coulombel.site` and `www.coulombel.site`:
 we need to configure subdomain for [`www`](#Configure-subdomain)). 
 
 ````shell script
-# remove ganding parking page CNAME record
+; remove ganding parking page CNAME record
 www 300 IN CNAME scoulomb.github.io.
 ````
 
 <details><summary>Test with APEX record and `www` subdomain</summary>
 <p>
 
-For same reason as [here](#Use-google-DNS).
+For same reason as [here](#DNS-propagation-effect).
 I will use Ubuntu laptop, using ISP DNS (not google or enterprise).
 I will plug directly to authoritative DNS.
 BUT as this authoritative DNS is not recursive, I will not be able to access records outside of Gandi.
@@ -393,7 +391,8 @@ www 1800 IN CNAME webredir.vip.gandi.net.
 ```
 
 Finally, in your Github repo create a file called `CNAME` which contains your Gandi domain name, e.g. `[my-domain].io`.
- 
+
+Note: If not using `www` for [redirection](#mutildomain) we can use it for this.
  </p>
  </details>
  
@@ -408,14 +407,15 @@ see private: Configure an APEX  (like coulombel.site directly) - BLOCK
 
 ##### Other than `www`
 
-Can I have both `coulombel.site` and subdomain `sylvain.coulombel.site` ? edit cname in repo to have 
-`coulombel.site` 
+Same [multidomain](#mutildomain) question as before.
+
+Can I have both `coulombel.site` and subdomain `sylvain.coulombel.site` ? 
+edit cname in repo to have `coulombel.site` 
 and `sylvain.coulombel.site` leads to 404.
 Note `www` see before seems a particular case.
 
 With A record we could also configure subdomain like sylvain.coulombel.site (not tested).
 
-I would keep [`sylvain.coulombel.site`](#Configure-subdomain)) only for final config.
 
 ## What about registry.coulombel.site 
 
@@ -439,6 +439,7 @@ helm.registry 10800 IN CNAME webredir.vip.gandi.net.
 pdf.cv 10800 IN CNAME webredir.vip.gandi.net.
 ````
 
+<!-- aligned with [multidomain](#mutildomain), but better to check it has been actually created -->
 <!-- Tested OK -->
 
 ### Solution ii
@@ -451,7 +452,7 @@ From there we can configure a [subdomain](#configure-subdomain)
 
 ## Consequences 
 
-As a consequence final CNAME file with solution ii. which is pure DNS.
+As a consequence we can be satisifed with [subdomain](#configure-subdomain)  and use [solution ii](#solution-ii) which is pure DNS.
 
 Retore to first back-up and add:
 
@@ -468,6 +469,9 @@ They are accessible with
 
 - `sylvain.coulombel.site`
 - `helm.registry.coulombel.site`
+
+However it maybe blocked by some proxy. Cf [README](README.md#Usage-of-helm-registry-once-helm-deliverable-are-pushed).
+So I will not use it.
 
 ## Links
 
@@ -520,6 +524,15 @@ In step 2 we could target directly what the wildcard is targetting with a A
 But using a CNAME is convenient for flexibility.
 
 <!--
-OS route deep dive
-Answered my question
+<-> OS route deep dive
+--> 
+
+## Conclusion 
+
+Based on all of this I will determine a DNS config to access `scoulomb.github.io.` in following repo:
+https://github.com/scoulomb/dns-config
+
+<!--
+page reviewed and aligned with dns-config 23aug2020
 -->
+
